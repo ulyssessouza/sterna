@@ -1,15 +1,15 @@
 package main
 
 import (
-	"log"
 	"flag"
-	"path/filepath"
+	"github.com/ulyssessouza/sterna/managers"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/util/homedir"
-	"github.com/ulyssessouza/sterna/managers"
+	"log"
+	"path/filepath"
 )
 
-func main() {
+func mainServices() {
 	var kubeconfig *string
 	home := homedir.HomeDir()
 	if home != "" {

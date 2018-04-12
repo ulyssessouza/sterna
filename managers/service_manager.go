@@ -1,10 +1,10 @@
 package managers
 
 import (
-	"log"
 	coreV1 "k8s.io/api/core/v1"
-	tCoreV1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	tCoreV1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	"log"
 )
 
 func NewServiceManager(kubeconfig string, namespace string) *ServiceManager {
@@ -14,22 +14,33 @@ func NewServiceManager(kubeconfig string, namespace string) *ServiceManager {
 
 type ServiceManager struct {
 	tCoreV1.ServiceInterface
-	namespace        string
+	namespace string
 }
 
 func (d *ServiceManager) Clone(toBeCloned string, cloneName string) {
+	d.CloneInline(toBeCloned, cloneName, false)
+}
+
+func (d *ServiceManager) CloneInline(toBeCloned string, cloneName string, inplace bool) {
 	service, err := d.Get(toBeCloned, metaV1.GetOptions{})
 	if err != nil {
 		log.Fatalf("Failed to get latest version of Deployment: %v", err)
 	}
 	log.Printf("Cloning service... %s -> %s\n", service.ObjectMeta.Name, cloneName)
 	service.ObjectMeta.Name = cloneName
-	service.ResourceVersion = ""
-	cloneService, err := d.ServiceInterface.Create(service)
+	service.Spec.Selector["app"] = cloneName
+
+	var cloneService *coreV1.Service
+	if inplace {
+		cloneService, err = d.ServiceInterface.Update(service)
+	} else {
+		service.ResourceVersion = ""
+		cloneService, err = d.ServiceInterface.Create(service)
+	}
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Printf("Cloned service %q.\n", cloneService.GetObjectMeta().GetName())
+	log.Printf("Cloned service (inplace=%t) %q.\n", inplace, cloneService.GetObjectMeta().GetName())
 }
 
 func (d *ServiceManager) CreateExample(name string) {

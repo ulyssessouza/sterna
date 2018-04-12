@@ -12,11 +12,12 @@ type Config struct {
 }
 
 type Migration struct {
-	Name            string `yaml:"name,omitempty"`
 	MigrationType   string `yaml:"type,omitempty"`
-	ServiceName     string `yaml:"service,omitempty"`
+	Name            string `yaml:"name,omitempty"`
+	ClonedName      string `yaml:"clonedName,omitempty"`
 	PreCloneScript  string `yaml:"preCloneScript,omitempty"`
 	PostCloneScript string `yaml:"postCloneScript,omitempty"`
+	Inplace         bool   `yaml:"inplace,omitempty"`
 }
 
 func (c *Config) Load(filename string) {

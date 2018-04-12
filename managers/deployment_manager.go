@@ -68,6 +68,10 @@ func (d *DeploymentManager) CreateExample(name string) {
 }
 
 func (d *DeploymentManager) Clone(toBeCloned string, cloneName string) {
+	d.CloneInline(toBeCloned, cloneName, false)
+}
+
+func (d *DeploymentManager) CloneInline(toBeCloned string, cloneName string, _ bool) {
 	resultDeployment, getErr := d.DeploymentInterface.Get(toBeCloned, metaV1.GetOptions{})
 	if getErr != nil {
 		log.Fatalf("Failed to get latest version of Deployment: %v", getErr)
