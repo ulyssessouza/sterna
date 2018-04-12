@@ -15,7 +15,7 @@ const (
 type Manager interface {
 	Cloner
 	CreateExample(name string)
-	Update(name string)
+	Update(oldSelector string, newSelector string)
 	List()
 	Delete(names ...string)
 }

@@ -17,6 +17,7 @@ type Migration struct {
 	ClonedName      string `yaml:"clonedName,omitempty"`
 	PreCloneScript  string `yaml:"preCloneScript,omitempty"`
 	PostCloneScript string `yaml:"postCloneScript,omitempty"`
+	Selector        string `yaml:"selector,omitempty"`
 	Inplace         bool   `yaml:"inplace,omitempty"`
 }
 

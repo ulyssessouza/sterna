@@ -77,7 +77,7 @@ func (d *StatefulSetManager) CreateExample(name string) {
 	log.Fatalln("TODO Implement CreateExample for StatefulSet")
 }
 
-func (d *StatefulSetManager) Update(name string) {
+func (d *StatefulSetManager) Update(name string, _ string) {
 	log.Fatalln("TODO Implement Update for StatefulSet")
 }
 

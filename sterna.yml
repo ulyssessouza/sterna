@@ -1,14 +1,13 @@
-description: "A yaml test"
+description: "Main sterna configuration"
 migrations:
   - type: "PodDisruptionBudget"
     name: "cockroachdb-budget"
     clonedName: "cockroachdb-budget-clone"
-    preCloneScript: "cockroach version"
     preCloneScript: "./pre.sh"
     postCloneScript: "./post.sh"
 
   - type: "StatefulSet"
     name: "cockroachdb"
     clonedName: "cockroachdb-clone"
-    preCloneScript: "./pre.sh"
+    preCloneScript: "./create_populate_blue.sh"
     postCloneScript: "./post-statefulset.sh"

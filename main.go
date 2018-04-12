@@ -37,7 +37,9 @@ func main() {
 
 	// Execute pre-clone scripts
 	for _, m := range c.Migrations {
-		execCommand(m.PreCloneScript)
+		if strings.TrimSpace(m.PreCloneScript) != "" {
+			execCommand(m.PreCloneScript)
+		}
 	}
 
 	prompt()
@@ -46,7 +48,11 @@ func main() {
 	for _, m := range c.Migrations {
 		switch m.MigrationType {
 		case managers.SERVICE:
-			managers.NewServiceManager(*kubeconfig, metaV1.NamespaceDefault).Clone(m.Name, m.ClonedName)
+			if m.Inplace {
+				managers.NewServiceManager(*kubeconfig, metaV1.NamespaceDefault).Update(m.Name, m.Selector)
+			} else {
+				managers.NewServiceManager(*kubeconfig, metaV1.NamespaceDefault).Clone(m.Name, m.ClonedName)
+			}
 		case managers.DEPLOYMENT:
 			managers.NewDeploymentManager(*kubeconfig, apiv1.NamespaceDefault).Clone(m.Name, m.ClonedName)
 		case managers.STATEFUL_SET:
@@ -60,7 +66,9 @@ func main() {
 
 	// Execute post-clone scripts
 	for _, m := range c.Migrations {
-		execCommand(m.PostCloneScript)
+		if strings.TrimSpace(m.PostCloneScript) != "" {
+			execCommand(m.PostCloneScript)
+		}
 	}
 }
 

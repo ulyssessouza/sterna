@@ -1,0 +1,1 @@
+ALTER TABLE test_tb RENAME COLUMN name TO nickname;

@@ -47,7 +47,7 @@ func (d *PodDisruptionBudgetManager) CreateExample(name string) {
 	log.Fatalln("TODO Implement CreateExample")
 }
 
-func (d *PodDisruptionBudgetManager) Update(name string) {
+func (d *PodDisruptionBudgetManager) Update(_ string, _ string) {
 	log.Fatalln("TODO Implement Update")
 }
 

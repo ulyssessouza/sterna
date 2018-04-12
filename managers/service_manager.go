@@ -35,6 +35,8 @@ func (d *ServiceManager) CloneInline(toBeCloned string, cloneName string, inplac
 		cloneService, err = d.ServiceInterface.Update(service)
 	} else {
 		service.ResourceVersion = ""
+		service.ObjectMeta.SelfLink = ""
+		service.ObjectMeta.UID = ""
 		cloneService, err = d.ServiceInterface.Create(service)
 	}
 	if err != nil {
@@ -78,8 +80,19 @@ func (d *ServiceManager) CreateExample(name string) {
 	log.Printf("Created service %q.\n", result.GetObjectMeta().GetName())
 }
 
-func (d *ServiceManager) Update(name string) {
-	log.Fatalln("TODO Implement Update")
+func (d *ServiceManager) Update(oldSelector string, newSelector string) {
+	service, err := d.Get(oldSelector, metaV1.GetOptions{})
+	if err != nil {
+		log.Fatalf("Failed to get latest version of Service: %v", err)
+	}
+	log.Printf("Updating ServiceSelector... %s -> %s\n", service.ObjectMeta.Name, newSelector)
+	service.Spec.Selector["app"] = newSelector
+	service, err = d.ServiceInterface.Update(service)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("Updated Service %q.\n", service.GetObjectMeta().GetName())
 }
 
 func (d *ServiceManager) List() {

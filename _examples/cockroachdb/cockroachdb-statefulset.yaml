@@ -46,7 +46,6 @@ spec:
   # The secondary port serves the UI as well as health and debug endpoints.
   - port: 8080
     nodePort: 30081
-    targetPort: 8080
     name: http
   selector:
     app: cockroachdb

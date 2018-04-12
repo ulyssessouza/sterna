@@ -89,7 +89,7 @@ func (d *DeploymentManager) CloneInline(toBeCloned string, cloneName string, _ b
 	log.Printf("Cloned deployment %q.\n", cloneDeployment.GetObjectMeta().GetName())
 }
 
-func (d *DeploymentManager) Update(name string) {
+func (d *DeploymentManager) Update(name string, _ string) {
 	log.Println("Updating deployment...")
 	//    You have two options to Update() this Deployment:
 	//
