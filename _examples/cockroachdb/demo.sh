@@ -25,6 +25,15 @@ function sql() {
       -e "$(cat /dev/stdin)"
 }
 
+function sqlClone() {
+  # TODO(knz): Why does the more idiomatic read from stdin not produce any
+  # output?
+  kubectl exec "cockroachdb-clone-${1}" -- /cockroach/cockroach sql \
+      --host "cockroachdb-clone-${1}.cockroachdb" \
+      --insecure \
+      -e "$(cat /dev/stdin)"
+}
+
 function kill() {
   ! kubectl exec -t "cockroachdb-${1}" -- /bin/bash -c "while true; do kill 1; done" &> /dev/null
 }

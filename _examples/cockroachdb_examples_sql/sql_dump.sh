@@ -1,2 +1,8 @@
 #!/bin/bash
-cockroach dump test --insecure --host 192.168.99.100 -p 32186 > dump.sql
+
+HOST=${1}
+PORT=${2}
+FILE=${3}
+DB=${4}
+
+cockroach dump ${DB} --insecure --host ${HOST} -p ${PORT} > ${3}

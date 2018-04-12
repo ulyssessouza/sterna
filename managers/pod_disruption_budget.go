@@ -30,8 +30,11 @@ func (d *PodDisruptionBudgetManager) CloneInline(toBeCloned string, cloneName st
 	}
 	log.Printf("Cloning PodDisruptionBudget... %s -> %s\n", pdb.ObjectMeta.Name, cloneName)
 	pdb.ObjectMeta.Name = cloneName
+	pdb.ObjectMeta.Labels["app"] = cloneName
 	pdb.Spec.Selector.MatchLabels["app"] = cloneName
 	pdb.ResourceVersion = ""
+	pdb.ObjectMeta.SelfLink = ""
+	pdb.ObjectMeta.UID = ""
 	pdb, err = d.PodDisruptionBudgetInterface.Create(pdb)
 
 	if err != nil {

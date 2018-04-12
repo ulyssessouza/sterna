@@ -70,7 +70,7 @@ func execCommand(c string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("PreScript output is: %s\n", out)
+	log.Printf("Script output is: %s\n", out)
 }
 
 func prompt() {

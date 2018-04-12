@@ -30,14 +30,13 @@ set -exuo pipefail
 
 # Clean up anything from a prior run:
 kubectl delete statefulsets,persistentvolumes,persistentvolumeclaims,services,poddisruptionbudget -l app=cockroachdb
-kubectl delete statefulsets,persistentvolumes,persistentvolumeclaims,services,poddisruptionbudget -l app=cockroachdb-cloned
-kubectl delete statefulsets,persistentvolumes,persistentvolumeclaims,services,poddisruptionbudget -l app=cockroachdb-budget-cloned
+kubectl delete statefulsets,persistentvolumes,persistentvolumeclaims,services,poddisruptionbudget -l app=cockroachdb-clone
+kubectl delete statefulsets,persistentvolumes,persistentvolumeclaims,services,poddisruptionbudget -l app=cockroachdb-budget-clone
 
 # Make persistent volumes and (correctly named) claims. We must create the
 # claims here manually even though that sounds counter-intuitive. For details
 # see https://github.com/kubernetes/contrib/pull/1295#issuecomment-230180894.
-# Note that we make an extra volume here so you can manually test scale-up.
-for i in $(seq 0 3); do
+for i in $(seq 0 2); do
   cat <<EOF | kubectl create -f -
 kind: PersistentVolume
 apiVersion: v1
@@ -48,7 +47,7 @@ metadata:
     app: cockroachdb
 spec:
   capacity:
-    storage: 1Gi
+    storage: 1Mi
   accessModes:
     - ReadWriteOnce
   hostPath:
@@ -67,7 +66,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 1Mi
 EOF
 done;
 

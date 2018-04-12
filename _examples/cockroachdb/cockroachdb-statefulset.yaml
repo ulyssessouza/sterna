@@ -3,6 +3,35 @@ kind: Service
 metadata:
   # This service is meant to be used by clients of the database. It exposes a ClusterIP that will
   # automatically load balance connections to the different database pods.
+  name: master-switch
+  labels:
+    app: cockroachdb
+spec:
+  ports:
+  # The main port, served by gRPC, serves Postgres-flavor SQL, internode
+  # traffic and the cli.
+  - name: grpc
+    port: 26257
+    targetPort: 26257
+    nodePort: 30250
+  # The secondary port serves the UI as well as health and debug endpoints.
+  - name: http
+    port: 30081
+    targetPort: 30081
+    nodePort: 30080
+  - name: app
+    port: 30000
+    targetPort: 30000
+    nodePort: 30800
+#  selector:
+#    app: cockroachdb
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  # This service is meant to be used by clients of the database. It exposes a ClusterIP that will
+  # automatically load balance connections to the different database pods.
   name: cockroachdb-public
   labels:
     app: cockroachdb
@@ -12,6 +41,7 @@ spec:
   # traffic and the cli.
   - port: 26257
     targetPort: 26257
+    nodePort: 30251
     name: grpc
   # The secondary port serves the UI as well as health and debug endpoints.
   - port: 8080
@@ -55,6 +85,64 @@ spec:
   clusterIP: None
   selector:
     app: cockroachdb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  # This service is meant to be used by clients of the database. It exposes a ClusterIP that will
+  # automatically load balance connections to the different database pods.
+  name: cockroachdb-clone-public
+  labels:
+    app: cockroachdb-clone
+spec:
+  ports:
+  # The main port, served by gRPC, serves Postgres-flavor SQL, internode
+  # traffic and the cli.
+  - port: 26257
+    targetPort: 26257
+    nodePort: 30252
+    name: grpc
+  # The secondary port serves the UI as well as health and debug endpoints.
+  - port: 8080
+    nodePort: 30082
+    name: http
+  selector:
+    app: cockroachdb-clone
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  # This service only exists to create DNS entries for each pod in the stateful
+  # set such that they can resolve each other's IP addresses. It does not
+  # create a load-balanced ClusterIP and should not be used directly by clients
+  # in most circumstances.
+  name: cockroachdb-clone
+  labels:
+    app: cockroachdb-clone
+  annotations:
+    # This is needed to make the peer-finder work properly and to help avoid
+    # edge cases where instance 0 comes up after losing its data and needs to
+    # decide whether it should create a new cluster or try to join an existing
+    # one. If it creates a new cluster when it should have joined an existing
+    # one, we'd end up with two separate clusters listening at the same service
+    # endpoint, which would be very bad.
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+    # Enable automatic monitoring of all instances when Prometheus is running in the cluster.
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "_status/vars"
+    prometheus.io/port: "8080"
+spec:
+  ports:
+  - port: 26257
+    targetPort: 26257
+    name: grpc
+  - port: 8080
+    targetPort: 8080
+    name: http
+  clusterIP: None
+  selector:
+    app: cockroachdb-clone
 ---
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
@@ -157,7 +245,7 @@ spec:
             exec /cockroach/cockroach ${CRARGS[*]}
       # No pre-stop hook is required, a SIGTERM plus some time is all that's
       # needed for graceful shutdown of a node.
-      terminationGracePeriodSeconds: 60
+      terminationGracePeriodSeconds: 0
       volumes:
       - name: datadir
         persistentVolumeClaim:
@@ -170,4 +258,4 @@ spec:
         - "ReadWriteOnce"
       resources:
         requests:
-          storage: 1Gi
+          storage: 1Mi

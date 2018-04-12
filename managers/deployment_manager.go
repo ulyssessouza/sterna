@@ -5,7 +5,6 @@ import (
 	apiV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	typedV1 "k8s.io/client-go/kubernetes/typed/apps/v1"
-
 	"fmt"
 	"k8s.io/client-go/util/retry"
 	"log"
@@ -79,7 +78,10 @@ func (d *DeploymentManager) CloneInline(toBeCloned string, cloneName string, _ b
 
 	log.Printf("Cloning deployment... %s -> %s\n", resultDeployment.ObjectMeta.Name, cloneName)
 	resultDeployment.ObjectMeta.Name = cloneName
+	resultDeployment.Status = appsV1.DeploymentStatus{}
 	resultDeployment.ResourceVersion = ""
+	resultDeployment.ObjectMeta.SelfLink = ""
+	resultDeployment.ObjectMeta.UID = ""
 	cloneDeployment, err := d.DeploymentInterface.Create(resultDeployment)
 	if err != nil {
 		log.Fatalln(err)
