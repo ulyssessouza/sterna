@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -35,6 +34,8 @@ func main() {
 	c := migration.Config{}
 	c.Load(*configFilePath)
 
+	prompt("Will execute pre-migrations scripts")
+
 	// Execute pre-clone scripts
 	for _, m := range c.Migrations {
 		if strings.TrimSpace(m.PreCloneScript) != "" {
@@ -42,7 +43,7 @@ func main() {
 		}
 	}
 
-	prompt()
+	prompt("Will execute cloning/update steps")
 
 	// Clone supported controllers
 	for _, m := range c.Migrations {
@@ -62,7 +63,7 @@ func main() {
 		}
 	}
 
-	prompt()
+	prompt("Will execute post-migration scripts")
 
 	// Execute post-clone scripts
 	for _, m := range c.Migrations {
@@ -81,17 +82,16 @@ func execCommand(c string) {
 	log.Printf("Script output is: %s\n", out)
 }
 
-func prompt() {
+func prompt(msg string) {
 	if *forced {
 		return
 	}
-	fmt.Printf("-> Press Return key to continue.")
+	log.Printf("%s -> Press Return key to continue.", msg)
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		break
 	}
 	if err := scanner.Err(); err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
-	fmt.Println()
 }
