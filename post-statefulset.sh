@@ -15,5 +15,3 @@ pushd _examples/cockroachdb_examples_sql
     ./wait_clusters.sh
     ./migrate_data.sh
 popd
-
-./sterna -force -config ./sterna-service.yml
