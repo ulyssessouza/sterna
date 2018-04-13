@@ -16,4 +16,4 @@ pushd _examples/cockroachdb_examples_sql
     ./migrate_data.sh
 popd
 
-sterna -force -config ./sterna-service.yml
+./sterna -force -config ./sterna-service.yml
