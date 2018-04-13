@@ -7,5 +7,4 @@ migrations:
   - type: "StatefulSet"
     name: "cockroachdb"
     clonedName: "cockroachdb-clone"
-    preCloneScript: "./create_populate_blue.sh"
     postCloneScript: "./post-statefulset.sh"
