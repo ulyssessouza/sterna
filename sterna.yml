@@ -3,8 +3,6 @@ migrations:
   - type: "PodDisruptionBudget"
     name: "cockroachdb-budget"
     clonedName: "cockroachdb-budget-clone"
-    preCloneScript: "./pre.sh"
-    postCloneScript: "./post.sh"
 
   - type: "StatefulSet"
     name: "cockroachdb"
