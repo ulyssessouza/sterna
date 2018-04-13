@@ -1,0 +1,6 @@
+description: "sterna configuration for the migration of the service"
+migrations:
+  - type: "Service"
+    name: "cockroachdb-public"
+    selector: "cockroachdb"
+    inplace: true
