@@ -8,4 +8,4 @@ do
     sleep 1
 done
 
-sleep 10
+sleep 20
